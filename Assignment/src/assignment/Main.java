@@ -1,8 +1,6 @@
 package assignment;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,28 +17,30 @@ public class Main implements Store {
         Main store = new Main(); 
         Scanner scanner = new Scanner(System.in);
 
-       
+        // Thêm sản phẩm vào cửa hàng
         store.addProduct(new Product(1, "Laptop", 1000.0, 10));
         store.addProduct(new Product(2, "Smartphone", 500.0, 20));
         store.addProduct(new Product(3, "Tablet", 300.0, 15));
         store.addProduct(new DigitalProduct(4, "E-book",20.0,49,1.5));
 
-
         boolean exit = false;
         while (!exit) {
-            printMenu();
-            int choice = getChoice(scanner);
+            printMenu(); // In menu chính
+            int choice = getChoice(scanner); // Lấy lựa chọn từ người dùng
 
             switch (choice) {
                 case 1:
-                    createNewOrder(store, scanner);
+                    createNewOrder(store, scanner); // Tạo đơn hàng mới
                     break;
                 case 2:
-                    printOrders(store);
+                    printOrders(store); // In danh sách đơn hàng
                     break;
                 case 3:
+                    saveOrdersToFile(store, scanner); // Ghi đơn hàng vào file
+                    break;
+                case 4:
                     System.out.println("Chương trình kết thúc. Hẹn gặp lại!");
-                    exit = true;
+                    exit = true; // Thoát chương trình
                     break;
                 default:
                     System.out.println("Lựa chọn không hợp lệ. Vui lòng chọn lại.");
@@ -48,14 +48,15 @@ public class Main implements Store {
             }
         }
 
-        scanner.close();
+        scanner.close(); // Đóng scanner
     }
 
     private static void printMenu() {
         System.out.println("\n====== MENU CHÍNH ======");
         System.out.println("1. Tạo mới đơn hàng");
         System.out.println("2. In danh sách đơn hàng của cửa hàng");
-        System.out.println("3. Thoát");
+        System.out.println("3. Ghi đơn hàng vào file");
+        System.out.println("4. Thoát");
         System.out.println("========================");
         System.out.print("Xin mời chọn chức năng: ");
     }
@@ -63,7 +64,7 @@ public class Main implements Store {
     private static int getChoice(Scanner scanner) {
         int choice = -1;
         try {
-            choice = Integer.parseInt(scanner.nextLine());
+            choice = Integer.parseInt(scanner.nextLine()); // Lấy lựa chọn từ người dùng
         } catch (NumberFormatException e) {
             System.out.println("Vui lòng nhập số hợp lệ.");
         }
@@ -71,19 +72,18 @@ public class Main implements Store {
     }
 
     private static void createNewOrder(Store store, Scanner scanner) {
-        System.out.println("\n*** TẠO ĐƠN HÀNG MỚI *");
+        System.out.println("\n*** TẠO ĐƠN HÀNG MỚI ***");
 
-        //lay thon gtin kh
+        // Lấy thông tin khách hàng
         System.out.print("Nhập tên khách hàng: ");
         String name = scanner.nextLine();
         System.out.print("Nhập email khách hàng: ");
         String email = scanner.nextLine();
         Customer customer = new Customer(store.getAllOrders().size() + 1, name, email);
 
+        Order order = store.createOrder(customer); // Tạo đơn hàng mới
 
-        Order order = store.createOrder(customer);
-
-        // neu con thi them vao hoa don
+        // Thêm sản phẩm vào đơn hàng
         while (true) {
             System.out.println("\nDanh sách sản phẩm có trong cửa hàng:");
             for (Product product : store.getProducts()) {
@@ -108,7 +108,7 @@ public class Main implements Store {
             }
 
             if (selectedProduct != null) {
-                order.addProduct(selectedProduct, quantity);
+                order.addProduct(selectedProduct, quantity); // Thêm sản phẩm vào đơn hàng
             } else {
                 System.out.println("Không tìm thấy sản phẩm.");
             }
@@ -118,43 +118,41 @@ public class Main implements Store {
     }
 
     private static void printOrders(Store store) {
-        System.out.println("\n*** DANH SÁCH ĐƠN HÀNG *");
+        System.out.println("\n*** DANH SÁCH ĐƠN HÀNG ***");
         for (Order order : store.getAllOrders()) {
             System.out.println(order.getOrderDetails());
             System.out.println("-----------------------------");
         }
     }
 
+    private static void saveOrdersToFile(Store store, Scanner scanner) {
+        System.out.print("\nNhập tên file để lưu danh sách đơn hàng: ");
+        String filename = scanner.nextLine();
+        for (Order order : store.getAllOrders()) {
+            order.saveToFile(filename); // Ghi đơn hàng vào file
+        }
+    }
+
+
     @Override
     public Order createOrder(Customer customer) {
-        Order newOrder = new Order(orders.size() + 1, customer);
-        orders.add(newOrder);
+        Order newOrder = new Order(orders.size() + 1, customer); // Tạo đơn hàng mới
+        orders.add(newOrder); // Thêm đơn hàng vào danh sách
         return newOrder;
     }
 
     @Override
     public List<Order> getAllOrders() {
-        return orders;
+        return orders; // Trả về danh sách đơn hàng
     }
 
     @Override
     public List<Product> getProducts() {
-        return products;
+        return products; // Trả về danh sách sản phẩm
     }
 
     @Override
     public void addProduct(Product product) {
-        products.add(product);
-    }
-    public void saveProductsToFile(String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            for (Product product : products) {
-                writer.write(product.toString());
-                writer.newLine();
-            }
-            System.out.println("Products saved to " + filename);
-        } catch (IOException e) {
-            System.err.println("Error writing to file: " + e.getMessage());
-        }
+        products.add(product); // Thêm sản phẩm vào danh sách
     }
 }
