@@ -1,6 +1,5 @@
 package assignment;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -79,8 +78,7 @@ public class Main implements Store {
         String name = scanner.nextLine();
         System.out.print("Nhập email khách hàng: ");
         String email = scanner.nextLine();
-        Customer customer = new Customer(store.getAllOrders().size() + 1, name, email);
-
+        Customer customer = new Customer(store.getAllOrders().size() + 1, name, email); // Tạo khách hàng mới
         Order order = store.createOrder(customer); // Tạo đơn hàng mới
 
         // Thêm sản phẩm vào đơn hàng
