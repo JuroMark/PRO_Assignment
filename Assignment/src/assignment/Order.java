@@ -54,7 +54,8 @@ public class Order {
         return details;
     }
     public void saveToFile(String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+        try (
+            BufferedWriter writer = new BufferedWriter(new FileWriter("khachhangdamua.txt"))) {
             writer.write("OrderId: " + orderId + "\n");
             writer.write("Customer: " + customer.getInfo() + "\n");
             writer.write("Products:\n");

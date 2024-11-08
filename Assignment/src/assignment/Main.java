@@ -1,5 +1,8 @@
 package assignment;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -29,13 +32,15 @@ public class Main implements Store {
 
             switch (choice) {
                 case 1:
-                    createNewOrder(store, scanner); // Tạo đơn hàng mới
+                    createNewOrder(store, scanner); // Tạo đơn hàng 
                     break;
                 case 2:
                     printOrders(store); // In danh sách đơn hàng
                     break;
                 case 3:
-                    saveOrdersToFile(store, scanner); // Ghi đơn hàng vào file
+                    System.out.println("Nhập bất kì để có thể tiếp tục:");
+                    String filename = scanner.nextLine();
+                    saveOrdersToFile(store, filename); // Ghi đơn hàng vào file
                     break;
                 case 4:
                     System.out.println("Chương trình kết thúc. Hẹn gặp lại!");
@@ -97,11 +102,11 @@ public class Main implements Store {
             System.out.print("Nhập số lượng: ");
             int quantity = Integer.parseInt(scanner.nextLine());
 
-            Product selectedProduct = null;
-            for (Product product : store.getProducts()) {
-                if (product.getProductId() == productId) {
-                    selectedProduct = product;
-                    break;
+            Product selectedProduct = null; // Khởi tạo biến để lưu sản phẩm được chọn
+            for (Product product : store.getProducts()) { // Duyệt qua từng sản phẩm trong danh sách sản phẩm của cửa hàng
+                if (product.getProductId() == productId) { // Kiểm tra nếu mã sản phẩm trùng với mã sản phẩm cần tìm
+                    selectedProduct = product; 
+                    break; // Thoát khỏi vòng lặp khi đã tìm thấy sản phẩm
                 }
             }
 
@@ -112,7 +117,7 @@ public class Main implements Store {
             }
         }
 
-        System.out.println("\nĐơn hàng đã được tạo thành công.");
+        System.out.println("\n*** Đơn hàng đã được tạo thành công. ***");
     }
 
     private static void printOrders(Store store) {
@@ -123,13 +128,21 @@ public class Main implements Store {
         }
     }
 
-    private static void saveOrdersToFile(Store store, Scanner scanner) {
-        System.out.print("\nNhập tên file để lưu danh sách đơn hàng: ");
-        String filename = scanner.nextLine();
-        for (Order order : store.getAllOrders()) {
-            order.saveToFile(filename); // Ghi đơn hàng vào file
+    private static void saveOrdersToFile(Store store, String filename) {
+        try (FileWriter fw = new FileWriter(filename = "khachhangdamua.txt", true); // Mở file ở chế độ append (thêm nội dung)
+             BufferedWriter bw = new BufferedWriter(fw)) {
+            for (Order order : store.getAllOrders()) {
+                bw.write(order.getOrderDetails());
+                bw.newLine(); // Thêm dòng mới sau mỗi đơn hàng
+            }
+    
+            System.out.println("Đơn hàng đã được lưu vào file " + filename + " thành công.");
+        } catch (IOException e) {
+            System.out.println("Đã xảy ra lỗi khi ghi vào file " + filename);
         }
     }
+    
+    
 
 
     @Override
